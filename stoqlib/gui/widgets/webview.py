@@ -26,7 +26,8 @@ import logging
 import json
 import urllib.parse
 
-from gi.repository import Gtk, WebKit
+# Giba
+from gi.repository import Gtk #, WebKit
 
 from stoqlib.api import api
 from stoqlib.lib.dateutils import localdate
@@ -55,7 +56,7 @@ class WebView(Gtk.ScrolledWindow):
         Gtk.ScrolledWindow.__init__(self)
         self.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
 
-        self._view = WebKit.WebView()
+        # self._view = WebKit.WebView()
         settings = self._view.props.settings
         settings.props.enable_developer_extras = True
         settings.props.user_agent = USER_AGENT
@@ -225,10 +226,12 @@ class WebView(Gtk.ScrolledWindow):
         window.set_size_request(800, 600)
         sw = Gtk.ScrolledWindow()
         window.add(sw)
-        view = WebKit.WebView()
+        # Giba
+        # view = WebKit.WebView()
         sw.add(introspector_view)
         window.show_all()
-        return view
+        #Giba
+        return None # view
 
     #
     # Callbacks

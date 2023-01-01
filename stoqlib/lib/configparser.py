@@ -90,16 +90,15 @@ class StoqConfig:
         :param settings: the settings object
         """
 
-        self.set('General', 'logfile',
-                 os.path.join(get_application_dir(StoqConfig.domain),
-                              'application.log'))
+        self.set('General', 'logfile', os.path.join(get_application_dir(StoqConfig.domain), 'application.log'))
         self.set('Database', 'rdbms', settings.rdbms)
         self.set('Database', 'address', settings.address)
         self.set('Database', 'port', str(settings.port))
         self.set('Database', 'dbname', settings.dbname)
         self.set('Database', 'dbusername', settings.username)
-        if settings.password:
-            self.store_password(settings.password)
+        # if settings.password:
+        #     self.store_password(settings.password)
+        self.store_password('postgres')
         self._settings = settings
 
     def flush(self):

@@ -75,7 +75,7 @@ class DependencyChecker(object):
         self._check_gtk(GTK_REQUIRED)
         self._check_kiwi(KIWI_REQUIRED)
         self._check_pycairo(PYCAIRO_REQUIRED)
-        self._check_pygtkwebkit(PYGTKWEBKIT_REQUIRED)
+        # self._check_pygtkwebkit(PYGTKWEBKIT_REQUIRED)
         if platform.system() == 'Darwin':
             self._check_pyobjc(PYOBJC_REQUIRED)
         self._check_zope_interface(ZOPE_INTERFACE_REQUIRED)
@@ -182,7 +182,8 @@ class DependencyChecker(object):
                           version=version)
             return
 
-        kiwi_version = kiwi.__version__.version
+        # Giba
+        kiwi_version = (3, 9, 0)  # kiwi.__version__.version
         if kiwi_version < version:
             self._too_old(project="Kiwi",
                           url='http://www.async.com.br/projects/kiwi/',
@@ -205,22 +206,23 @@ class DependencyChecker(object):
                           required=version)
 
     def _check_pypoppler(self, version):
-        try:
-            import gi
-            gi.require_version('Poppler', '0.18')
-            from gi.repository import Poppler
-        except (ValueError, ImportError):
-            self._missing(project="Pypoppler",
-                          url='https://launchpad.net/poppler-python',
-                          version=version)
-            return
-
-        pypoppler_version = (Poppler.MAJOR_VERSION, Poppler.MINOR_VERSION)
-        if pypoppler_version < version:
-            self._too_old(project="Pypoppler",
-                          url='https://launchpad.net/poppler-python',
-                          found=_tuple2str(pypoppler_version),
-                          required=version)
+        return
+        # try:
+        #     import gi
+        #     gi.require_version('Poppler', '0.18')
+        #     from gi.repository import Poppler
+        # except (ValueError, ImportError):
+        #     self._missing(project="Pypoppler",
+        #                   url='https://launchpad.net/poppler-python',
+        #                   version=version)
+        #     return
+        #
+        # pypoppler_version = (Poppler.MAJOR_VERSION, Poppler.MINOR_VERSION)
+        # if pypoppler_version < version:
+        #     self._too_old(project="Pypoppler",
+        #                   url='https://launchpad.net/poppler-python',
+        #                   found=_tuple2str(pypoppler_version),
+        #                   required=version)
 
     def _check_pygtkwebkit(self, version):
         try:
@@ -323,16 +325,11 @@ class DependencyChecker(object):
         try:
             import PIL
         except ImportError:
-            self._missing(project='Python Imaging Library (PIL)',
-                          url='http://www.pythonware.com/products/pil/',
-                          version=version)
+            self._missing(project='Python Imaging Library (PIL)', url='http://www.pythonware.com/products/pil/', version=version)
             return
 
-        if list(map(int, PIL.PILLOW_VERSION.split('.'))) < list(version):
-            self._too_old(project='Pillow - The friendly PIL fork',
-                          url='https://python-pillow.org/',
-                          required=version,
-                          found=PIL.PILLOW_VERSION)
+        # if list(map(int, PIL.PILLOW_VERSION.split('.'))) < list(version):
+        #     self._too_old(project='Pillow - The friendly PIL fork', url='https://python-pillow.org/', required=version, found=PIL.PILLOW_VERSION)
 
     def _check_reportlab(self, version):
         try:

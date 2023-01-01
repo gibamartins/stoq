@@ -461,18 +461,13 @@ class ProductEditor(SellableEditor):
             # Store the selected attributes in the database
             if self._wizard:
                 for attribute in self._wizard.attr_list:
-                    ProductAttribute(store=self.store,
-                                     product_id=self.model.id,
-                                     attribute_id=attribute.id)
+                    ProductAttribute(store=self.store, product_id=self.model.id, attribute_id=attribute.id)
 
-            attribute_option_slave = ProductGridSlave(self.store, self.model,
-                                                      self.visual_mode)
+            attribute_option_slave = ProductGridSlave(self.store, self.model, self.visual_mode)
             extra_tabs.append((_(u'Grid'), attribute_option_slave))
-            attribute_option_slave.grid_tab_alignment.connect('focus',
-                                                              self._on_grid_tab_alignment__focus)
+            attribute_option_slave.grid_tab_alignment.connect('focus', self._on_grid_tab_alignment__focus)
         elif self.model.product_type == Product.TYPE_PACKAGE:
-            self.package_slave = ProductPackageSlave(self.store, self.model,
-                                                     visual_mode=self.visual_mode)
+            self.package_slave = ProductPackageSlave(self.store, self.model, visual_mode=self.visual_mode)
             extra_tabs.append((_(u'Pack content'), self.package_slave))
 
         return extra_tabs

@@ -160,13 +160,15 @@ class WebService(object):
         else:
             source = 'ppa'
 
+        # dist -> platform.dist()
+        # uname -> platform.uname()
         params = {
             'demo': sysparam.get_bool('DEMO_MODE'),
-            'dist': ' '.join(platform.dist()),
+            'dist': ' '.join('Linux'),
             'cnpj': get_main_cnpj(store),
             'plugins': ' '.join(InstalledPlugin.get_plugin_names(store)),
             'product_key': get_product_key(),
-            'uname': ' '.join(platform.uname()),
+            'uname': ' '.join("Gilberto"),
             'version': app_version,
             'source': source,
         }

@@ -212,7 +212,9 @@ class DatabaseSettings(object):
             if not dbname:
                 dbname = os.environ.get('PGDATABASE', 'stoq')
             if not username:
-                username = os.environ.get('PGUSER', get_username())
+                # username = os.environ.get('PGUSER', get_username())
+                # Giba
+                username = os.environ.get('PGUSER', 'postgres')
             if not port:
                 port = os.environ.get('PGPORT', 5432)
         self.rdbms = rdbms

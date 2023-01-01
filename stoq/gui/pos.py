@@ -38,8 +38,7 @@ from storm.expr import And, Lower
 
 from stoqdrivers.enum import UnitType
 from stoqlib.api import api
-from stoqlib.gui.base.dialogs import (get_current_toplevel, add_current_toplevel,
-                                      _pop_current_toplevel)
+from stoqlib.gui.base.dialogs import (get_current_toplevel, add_current_toplevel, _pop_current_toplevel)
 from stoqlib.domain.payment.group import PaymentGroup
 from stoqlib.domain.person import Transporter, Client
 from stoqlib.domain.product import StorableBatch

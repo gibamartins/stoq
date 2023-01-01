@@ -28,10 +28,10 @@ import logging
 import os
 import urllib.parse
 
-from nss import io
-from nss import nss
-from nss import ssl
-from nss.error import NSPRError
+# from nss import io
+# from nss import nss
+# from nss import ssl
+# from nss.error import NSPRError
 
 log = logging.getLogger(__name__)
 _certdb = None
@@ -49,57 +49,52 @@ def nss_setup(certdb, password_callback=None, certificate_callback=None):
 
 
 class _NssHTTPConnection(http.client.HTTPConnection):
-
     default_port = 443
-
     def __init__(self, host, port, timeout=3, **kwargs):
-        http.client.HTTPConnection.__init__(
-            self, host, port, timeout=timeout, **kwargs)
-
+        http.client.HTTPConnection.__init__(self, host, port, timeout=timeout, **kwargs)
         log.info('%s init %s', self.__class__.__name__, host)
         self.sock = None
         self._timeout = timeout
-        self._certdb = nss.get_default_certdb()
+        # self._certdb = nss.get_default_certdb()
 
     def connect(self):
         log.info("connect: host=%s port=%s", self.host, self.port)
-        try:
-            addr_info = io.AddrInfo(self.host)
-        except Exception:
-            log.error("could not resolve host address '%s'", self.host)
-            raise
-
-        for net_addr in addr_info:
-            net_addr.port = self.port
-            self._create_socket(net_addr.family)
-            try:
-                log.info("try connect: %s", net_addr)
-                self.sock.connect(net_addr,
-                                  timeout=io.seconds_to_interval(self._timeout))
-            except Exception as e:
-                log.info("connect failed: %s (%s)", net_addr, e)
-            else:
-                log.info("connected to: %s", net_addr)
-                break
-        else:
-            raise IOError(errno.ENOTCONN,
-                          "Could not connect to %s at port %d" % (self.host, self.port))
+        # try:
+        #     addr_info = io.AddrInfo(self.host)
+        # except Exception:
+        #     log.error("could not resolve host address '%s'", self.host)
+        #     raise
+        #
+        # for net_addr in addr_info:
+        #     net_addr.port = self.port
+        #     self._create_socket(net_addr.family)
+        #     try:
+        #         log.info("try connect: %s", net_addr)
+        #         self.sock.connect(net_addr, timeout=io.seconds_to_interval(self._timeout))
+        #     except Exception as e:
+        #         log.info("connect failed: %s (%s)", net_addr, e)
+        #     else:
+        #         log.info("connected to: %s", net_addr)
+        #         break
+        # else:
+        #     raise IOError(errno.ENOTCONN, "Could not connect to %s at port %d" % (self.host, self.port))
 
     def _create_socket(self, family):
-        self.sock = ssl.SSLSocket(family)
-        self.sock.set_ssl_option(ssl.SSL_SECURITY, True)
-        self.sock.set_ssl_option(ssl.SSL_HANDSHAKE_AS_CLIENT, True)
-        self.sock.set_hostname(self.host)
-
-        # Provide a callback to verify the servers certificate
-        self.sock.set_auth_certificate_callback(
-            self._auth_certificate_callback, self._certdb)
-        self.sock.set_client_auth_data_callback(
-            self._client_auth_data_callback, '', '', self._certdb)
+        print('---> _create_socket: ')
+        # self.sock = ssl.SSLSocket(family)
+        # self.sock.set_ssl_option(ssl.SSL_SECURITY, True)
+        # self.sock.set_ssl_option(ssl.SSL_HANDSHAKE_AS_CLIENT, True)
+        # self.sock.set_hostname(self.host)
+        #
+        # # Provide a callback to verify the servers certificate
+        # self.sock.set_auth_certificate_callback(
+        #     self._auth_certificate_callback, self._certdb)
+        # self.sock.set_client_auth_data_callback(
+        #     self._client_auth_data_callback, '', '', self._certdb)
 
     def _auth_certificate_callback(self, sock, check_sig, is_server, certdb):
         cert = sock.get_peer_certificate()
-        intended_usage = nss.certificateUsageSSLServer
+        intended_usage = 'Testando' # nss.certificateUsageSSLServer
         try:
             # If the cert fails validation it will raise an exception, the errno attribute
             # will be set to the error code matching the reason why the validation failed
@@ -107,17 +102,13 @@ class _NssHTTPConnection(http.client.HTTPConnection):
 
             # XXX: After python3 migration, this is not working properly. Assume that
             # the intented usage is valid for now.
-            #pin_args = sock.get_pkcs11_pin_arg() or ()
-            #approved_usage = cert.verify_now(certdb, check_sig, intended_usage, *pin_args)
             approved_usage = intended_usage
         except Exception as e:
             # XXX: Why isn't the certificate valid?
             logging.info('cert validation failed for "%s" (%s)', cert.subject, e.strerror)
             approved_usage = intended_usage
 
-        logging.debug("approved_usage = %s intended_usage = %s",
-                      ', '.join(nss.cert_usage_flags(approved_usage)),
-                      ', '.join(nss.cert_usage_flags(intended_usage)))
+        # logging.debug("approved_usage = %s intended_usage = %s", ', '.join(nss.cert_usage_flags(approved_usage)), ', '.join(nss.cert_usage_flags(intended_usage)))
 
         if not bool(approved_usage & intended_usage):
             logging.debug('cert not valid for "%s"', cert.subject)
@@ -140,15 +131,15 @@ class _NssHTTPConnection(http.client.HTTPConnection):
         return cert_is_valid
 
     def _client_auth_data_callback(self, ca_names, chosen_nickname, password, nicknames):
-        nickname = _certificate_callback(
-            nss.get_cert_nicknames(self._certdb, nss.SEC_CERT_NICKNAMES_USER))
-        try:
-            cert = nss.find_cert_from_nickname(nickname, password)
-            priv_key = nss.find_key_by_any_cert(cert, password)
-        except NSPRError:
-            return False
+        # nickname = _certificate_callback(nss.get_cert_nicknames(self._certdb, nss.SEC_CERT_NICKNAMES_USER))
+        # try:
+        #     cert = nss.find_cert_from_nickname(nickname, password)
+        #     priv_key = nss.find_key_by_any_cert(cert, password)
+        # except NSPRError:
+        #     return False
 
-        return cert, priv_key
+        # return cert, priv_key
+        return True
 
 
 class NssResponse(object):
@@ -201,34 +192,32 @@ class NssSession(object):
         self.shutdown()
 
     def init(self):
-        if nss.nss_is_initialized():
-            return
-
-        if _password_callback is not None:
-            nss.set_password_callback(_password_callback)
-
-        nss.nss_init(_certdb)
-        ssl.set_domestic_policy()
+        # if nss.nss_is_initialized():
+        return
+        #
+        # if _password_callback is not None:
+        #     nss.set_password_callback(_password_callback)
+        #
+        # nss.nss_init(_certdb)
+        # ssl.set_domestic_policy()
 
     def shutdown(self):
-        if not nss.nss_is_initialized():
-            return
-
-        try:
-            ssl.clear_session_cache()
-        except Exception:
-            pass
-        try:
-            nss.nss_shutdown()
-        except Exception:
-            pass
+        # if not nss.nss_is_initialized():
+        return
+        # try:
+        #     ssl.clear_session_cache()
+        # except Exception:
+        #     pass
+        # try:
+        #     nss.nss_shutdown()
+        # except Exception:
+        #     pass
 
     def get(self, url, headers=None):
         return self.request('GET', url, headers=headers)
 
     def post(self, url, data=None, headers=None, timeout=None):
-        return self.request('POST', url, data=data, headers=headers,
-                            timeout=timeout)
+        return self.request('POST', url, data=data, headers=headers, timeout=timeout)
 
     def request(self, method, url, data=None, headers=None, timeout=None):
         parsed = urllib.parse.urlparse(url)
@@ -239,9 +228,7 @@ class NssSession(object):
         key = (parsed.netloc, port)
         conn = self._conns.get(key, None)
         if conn is None:
-            conn = self._conns.setdefault(key, _NssHTTPConnection(parsed.netloc,
-                                                                  port,
-                                                                  timeout=timeout))
+            conn = self._conns.setdefault(key, _NssHTTPConnection(parsed.netloc, port, timeout=timeout))
             conn.connect()
 
         # FIXME: python-nss stores password_callback on a per-thread dict
@@ -249,9 +236,8 @@ class NssSession(object):
         # some would not find it. It is not a big problem since setting the
         # password callback is a fast operation, but maybe there's
         # some better solution here?
-        if _password_callback is not None:
-            nss.set_password_callback(_password_callback)
-
+        # if _password_callback is not None:
+        #     nss.set_password_callback(_password_callback)
         conn.request(method, parsed.path, body=data, headers=headers)
         return NssResponse(conn.getresponse())
 
@@ -260,12 +246,10 @@ if __name__ == '__main__':
     firefoxdir = os.path.join(os.environ['HOME'], '.mozilla', 'firefox')
     if not os.path.exists(firefoxdir):
         raise AssertionError
-
     import configparser
     cfg = configparser.ConfigParser()
     cfg.read(os.path.join(firefoxdir, 'profiles.ini'))
     nss_setup(os.path.join(firefoxdir, cfg.get('Profile0', 'Path')))
-
     url = 'https://nfce-homologacao.sefazrs.rs.gov.br/ws/NfeStatusServico/NFeStatusServico2.asmx'
     data = ('<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" '
             'xmlns:xsd="http://www.w3.org/2001/XMLSchema" '

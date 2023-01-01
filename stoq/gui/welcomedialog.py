@@ -58,13 +58,12 @@ class WelcomeDialog(BasicDialog):
         self.vbox.add(sw)
         sw.show()
 
-        from gi.repository import WebKit
-        self._view = WebKit.WebView()
-        self._view.connect(
-            'navigation-policy-decision-requested',
-            self._on_view__navigation_policy_decision_requested)
-        sw.add(self._view)
-        self._view.show()
+        # Giba
+        # from gi.repository import WebKit
+        self._view = None # WebKit.WebView()
+        # self._view.connect('navigation-policy-decision-requested', self._on_view__navigation_policy_decision_requested)
+        # sw.add(self._view)
+        # self._view.show()
 
     def _setup_buttons(self):
         self.cancel_button.hide()
